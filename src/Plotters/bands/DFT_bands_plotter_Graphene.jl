@@ -59,7 +59,19 @@ plot(
     ytickfont = font(12, "Serif"),
     ylims = (-22, 20),
     legend = :outertopright,
+    legendfontsize = 10,
 )
+
+for ii = 1:size(Energies)[1]
+    plot!(
+        xCoord,
+        Energies[ii, :],
+        linewidth = 3,
+        linecolor = RGB(0.6, 0.6, 0.6),
+        linealpha = 1,
+        label = false,
+    )
+end
 
 scatter!(
     DFT_Bands_P[:, 1] ./ maximum(DFT_Bands_P[:, 1]) .* (KΓ_L + ΓM_L + MK_L),
@@ -69,7 +81,7 @@ scatter!(
     markercolor = my_green,
     markerstrokewidth = 0,
     label = "Planar",
-    markershape = :circle,
+    markershape = :diamond,
 )
 
 scatter!(
@@ -80,20 +92,13 @@ scatter!(
     markercolor = my_blue,
     markerstrokewidth = 0,
     label = "Buckled",
-    markershape = :diamond,
+    markershape = :circle,
 )
 
-for ii = 1:size(Energies)[1]
-    plot!(
-        xCoord,
-        Energies[ii, :],
-        # linewidth = 2,
-        linecolor = RGB(0.5, 0.5, 0.5),
-        linealpha = 1,
-        label = false
-    )
-end
-
-annotate!((0.9 * maximum(xCoord),-20,"(e)"))
+annotate!((
+    0.9 * maximum(xCoord),
+    -18,
+    Plots.text("(e)", :right, 18),
+))
 # savefig("Test.pdf")
 savefig("UC_Bands_Comparison.pdf")

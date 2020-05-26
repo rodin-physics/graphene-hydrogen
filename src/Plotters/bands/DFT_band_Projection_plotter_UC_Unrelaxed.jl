@@ -12,7 +12,7 @@ DFT_Bands_PX = DFT_Bands_PX[1:2:end, :]
 DFT_Bands_PY = DFT_Bands_PY[1:2:end, :]
 DFT_Bands_PZ = DFT_Bands_PZ[1:2:end, :]
 
-e_shift = efermi_U;
+e_shift = efermi_1h_uc_U;
 marker_alpha = 0.7;
 
 # Distances between different point of symmetry
@@ -32,6 +32,7 @@ plot(
     ytickfont = font(12, "Serif"),
     ylims = (-22, 20),
     legend = :outertopright,
+    legendfontsize = 10
 )
 
 # Plotting
@@ -65,7 +66,7 @@ scatter!(
     markeralpha = marker_alpha,
     markercolor = my_green,
     markerstrokewidth = 0,
-    label = L"$\mathrm{H}_s$",
+    label = L"$\mathrm{H}$",
     legendfontsize = 10,
 )
 
@@ -76,7 +77,7 @@ scatter!(
     markeralpha = marker_alpha,
     markercolor = my_orange,
     markerstrokewidth = 0,
-    label = L"$\mathrm{C}_s$",
+    label = L"$s$",
     legendfontsize = 10,
 )
 
@@ -87,7 +88,7 @@ scatter!(
     markeralpha = marker_alpha,
     markercolor = my_violet,
     markerstrokewidth = 0,
-    label = L"$\mathrm{C}_{p_x}$",
+    label = L"$p_x$",
     legendfontsize = 10,
 )
 
@@ -98,7 +99,7 @@ scatter!(
     markeralpha = marker_alpha,
     markercolor = my_red,
     markerstrokewidth = 0,
-    label = L"$\mathrm{C}_{p_y}$",
+    label = L"$p_y$",
     legendfontsize = 10,
 )
 
@@ -109,8 +110,14 @@ scatter!(
     markeralpha = marker_alpha,
     markercolor = my_blue,
     markerstrokewidth = 0,
-    label = L"$\mathrm{C}_{p_z}$",
+    label = L"$p_z$",
     legendfontsize = 10,
 )
+
+annotate!((
+    0.9 * (KΓ_L + ΓM_L + MK_L),
+    -18.5,
+    Plots.text("(a)", :right, 18),
+))
 
 savefig("UC_Projection_Unrelaxed.pdf")

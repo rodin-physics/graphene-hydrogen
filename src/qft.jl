@@ -17,47 +17,93 @@ function graphene_B(u, v)
     return GrapheneCoord(u, v, "○")
 end
 
-## Propagators
-# Pristine graphene Green's function
-function G0(z, q)
-    return inv([
-        z 0
-        0 z
-    ] - Hπ(q))
+@inline function Ω_Integrand(z, u, v, x::Float64)
+    W = ((z / t)^2 - 1.0) / (4.0 * cos(x)) - cos(x)
+    return (
+        exp(1.0im * (u - v) * x) / cos(x) *
+        ((W - √(W - 1) * √(W + 1))^abs.(u + v)) / (√(W - 1) * √(W + 1))
+    )
 end
 
-# Real-space propagator. The function picks out the correct element of
-# the Ξ matrix depending on the sublattices of the graphene coordinates
-function Ξ(a_l::GrapheneCoord, a_m::GrapheneCoord, z)
+@inline function Ω(z, u, v)
+    return ((quadgk(
+        x -> Ω_Integrand(z, u, v, x) / (8.0 * π * t^2),
+        0.0,
+        2.0 * π,
+        atol = α,
+    ))[1])
+end
+
+@inline function Ωp_Integrand(z, u, v, x::Float64)
+    W = ((z / t)^2 - 1.0) / (4.0 * cos(x)) - cos(x)
+    return (
+        2 *
+        exp(1.0im * (u - v) * x) *
+        ((W - √(W - 1) * √(W + 1))^abs.(u + v + 1)) / (√(W - 1) * √(W + 1))
+    )
+end
+
+@inline function Ωp(z, u, v)
+    return ((quadgk(
+        x -> Ωp_Integrand(z, u, v, x) / (8.0 * π * t^2),
+        0.0,
+        2.0 * π,
+        atol = α,
+    ))[1])
+end
+
+@inline function Ωn_Integrand(z, u, v, x::Float64)
+    W = ((z / t)^2 - 1.0) / (4.0 * cos(x)) - cos(x)
+    return (
+        2 *
+        exp(1.0im * (u - v) * x) *
+        ((W - √(W - 1) * √(W + 1))^abs.(u + v - 1)) / (√(W - 1) * √(W + 1))
+    )
+end
+
+@inline function Ωn(z, u, v)
+    return ((quadgk(
+        x -> Ωn_Integrand(z, u, v, x) / (8.0 * π * t^2),
+        0.0,
+        2.0 * π,
+        atol = α,
+    ))[1])
+end
+
+# The propagator function picks out the correct element of the Ξ matrix based
+# on the sublattices of the graphene coordinates
+function propagator(a_l::GrapheneCoord, a_m::GrapheneCoord, z)
     u = a_l.u - a_m.u
     v = a_l.v - a_m.v
-    G_z(r) = G0(z, r .* [2 / a, 2 / a / √(3)])
-    kernel(r) =
-        G_z(r) .* exp(1im * ((u - v) * r[1] + (u + v) * r[2])) / (2 * π)^2
     if a_l.sublattice == a_m.sublattice
-        idx = 1
+        return (z * Ω(z, u, v))
     elseif ([a_l.sublattice, a_m.sublattice] == ["●", "○"])
-        idx = 3
+        return (-t * (Ω(z, u, v) + Ωp(z, u, v)))
     elseif ([a_l.sublattice, a_m.sublattice] == ["○", "●"])
-        idx = 2
+        return (-t * (Ω(z, u, v) + Ωn(z, u, v)))
     else
         error("Illegal sublattice parameter")
     end
-    res = hcubature(
-        2,
-        (r, v) -> v[:] = begin
-            k = kernel(r)[idx]
-            [real(k), imag(k)]
-        end,
-        [0, 0],
-        [2 * π, 2 * π],
-        reltol = ν,
-        abstol = α,
-    )
-    return res[1]
 end
 
-function Γ_I(ω, ε, V0, V1, δ)
+# The (I^T Ξ I) Matrix. We use the fact that the matrix is symmetric to speed
+# up the calculation
+function propagator_matrix(z, Coords::Vector{GrapheneCoord})
+    len_coords = length(Coords)
+    out = zeros(ComplexF64, len_coords, len_coords)
+    for ii = 1:len_coords
+        @inbounds for jj = ii:len_coords
+            out[ii, jj] = propagator(Coords[ii], Coords[jj], z)
+            out[jj, ii] = out[ii, jj]
+        end
+    end
+    return out
+end
+
+function δΓ_I(z, ε, V0, V1, δ)
+    coords =
+        [graphene_A(0, 0), graphene_B(0, 0), graphene_B(1, 0), graphene_B(0, 1)]
+
     # We add a small number to the diagonal to allow the matrix to be inverted
     Δ = [
         η δ δ δ
@@ -68,53 +114,33 @@ function Γ_I(ω, ε, V0, V1, δ)
 
     Vs = [V0, V1, V1, V1]
 
-    Ξ0 = Ξ(graphene_A(0, 0), graphene_A(0, 0), ω + 1im * η)
-    Ξ1 = Ξ(graphene_A(0, 0), graphene_B(0, 0), ω + 1im * η)
-    Ξ2 = Ξ(graphene_B(0, 0), graphene_B(1, 0), ω + 1im * η)
-
-    IΞI = [
-        Ξ0 Ξ1 Ξ1 Ξ1
-        Ξ1 Ξ0 Ξ2 Ξ2
-        Ξ1 Ξ2 Ξ0 Ξ2
-        Ξ1 Ξ2 Ξ2 Ξ0
-    ]
-
+    IΞI = propagator_matrix(z, coords)
     nAtoms = length(coords)
     iden = Diagonal(ones(nAtoms))
     Λ = IΞI * (iden + inv(inv(Δ * IΞI) - iden))
-
-    return 1 / (ω + 1im * η - ε - Vs' * Λ * Vs)
+    return (Vs' * Λ * Vs) / ((z - ε - Vs' * Λ * Vs) * (z - ε))
 end
 
+function Γ_I(z, ε, V0, V1, δ)
+    return (δΓ_I(z, ε, V0, V1, δ) + 1 / (z - ε))
+end
 
-function G_R(ω, coord, ε, V0, V1, δ)
+function G_R(z, coord, ε, V0, V1, δ)
     coords =
-    [graphene_A(0, 0), graphene_B(0, 0), graphene_B(1, 0), graphene_B(0, 1)]
-
-    # We add a small number to the diagonal to allow the matrix to be inverted
+        [graphene_A(0, 0), graphene_B(0, 0), graphene_B(1, 0), graphene_B(0, 1)]
+    IΞI = propagator_matrix(z, coords)
     Δ = [
         η δ δ δ
         δ η 0 0
         δ 0 η 0
         δ 0 0 η
     ]
-
     Vs = [V0, V1, V1, V1]
+    D = inv(Δ + (Vs * Vs') ./ (z - ε)) - IΞI |> inv
 
-    Ξ0 = Ξ(graphene_A(0, 0), graphene_A(0, 0), ω + 1im * η)
-    Ξ1 = Ξ(graphene_A(0, 0), graphene_B(0, 0), ω + 1im * η)
-    Ξ2 = Ξ(graphene_B(0, 0), graphene_B(1, 0), ω + 1im * η)
+    Ξ_0 = propagator(coord, coord, z)
 
-    IΞI = [
-        Ξ0 Ξ1 Ξ1 Ξ1
-        Ξ1 Ξ0 Ξ2 Ξ2
-        Ξ1 Ξ2 Ξ0 Ξ2
-        Ξ1 Ξ2 Ξ2 Ξ0
-    ]
+    prop_vector_R = map(x -> propagator(x, coord, z), coords)
 
-    D = inv(Δ + (Vs * Vs') ./ (ω + 1im * η - ε)) - IΞI |> inv
-
-    prop_vector_R = map(x -> propagator(x, coord, ω + 1im * η), coords)
-
-    return (Ξ0 + transpose(prop_vector_R) * D * prop_vector_R)
+    return (Ξ_0 + transpose(prop_vector_R) * D * prop_vector_R)
 end

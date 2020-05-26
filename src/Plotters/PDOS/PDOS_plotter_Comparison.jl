@@ -4,6 +4,7 @@ include("PDOS_Data_Import.jl")
 
 line_alpha = 0.9;
 fill_alpha = 0.25;
+y_max = 1;
 
 ## Plot setup
 pyplot()
@@ -13,49 +14,27 @@ plot(
     xtickfont = font(12, "Serif"),
     ytickfont = font(12, "Serif"),
     xlims = (-10, 5),
-    ylims = (0, 1),
+    ylims = (0, y_max),
     yticks = false,
     legend = :topright,
+    legendfontsize = 10
 )
 
 ## Hydrogen
-plot!(
-    PDOS_H_U[2:end, 1] .- efermi_1h_10x10_U,
-    PDOS_H_U[2:end, 3],
-    linealpha = line_alpha,
-    color = my_green,
-    label = "Unrelaxed",
-    fillcolor = my_green,
-    fillrange = 0.0,
-    fillalpha = fill_alpha
-)
-
-plot!(
-    PDOS_H_R[2:end, 1] .- efermi_1h_10x10_R,
-    PDOS_H_R[2:end, 3],
-    linealpha = line_alpha,
-    color = my_blue,
-    label = "Relaxed",
-    fillcolor = my_blue,
-    fillrange = 0.0,
-    fillalpha = fill_alpha
-)
-
-## Carbon PZ
 # plot!(
-#     PDOS_C3_p_U[2:end, 1] .- efermi_1h_10x10_U,
-#     PDOS_C3_p_U[2:end, 3],
+#     PDOS_H_U[2:end, 1] .- efermi_1h_10x10_U,
+#     PDOS_H_U[2:end, 3],
 #     linealpha = line_alpha,
 #     color = my_green,
-#     label = "Unrelaxed",
+#     label = "Flat",
 #     fillcolor = my_green,
 #     fillrange = 0.0,
 #     fillalpha = fill_alpha
 # )
 #
 # plot!(
-#     PDOS_C3_p_R[2:end, 1] .- efermi_1h_10x10_R,
-#     PDOS_C3_p_R[2:end, 3],
+#     PDOS_H_R[2:end, 1] .- efermi_1h_10x10_R,
+#     PDOS_H_R[2:end, 3],
 #     linealpha = line_alpha,
 #     color = my_blue,
 #     label = "Relaxed",
@@ -64,6 +43,35 @@ plot!(
 #     fillalpha = fill_alpha
 # )
 
-savefig("PDOS_10x10_H.pdf")
-# savefig("PDOS_10x10_C3_pz.pdf")
+## Carbon PZ
+plot!(
+    PDOS_C0_p_U[2:end, 1] .- efermi_1h_10x10_U,
+    PDOS_C0_p_U[2:end, 3],
+    linealpha = line_alpha,
+    color = my_green,
+    label = "Flat",
+    fillcolor = my_green,
+    fillrange = 0.0,
+    fillalpha = fill_alpha
+)
+
+plot!(
+    PDOS_C0_p_R[2:end, 1] .- efermi_1h_10x10_R,
+    PDOS_C0_p_R[2:end, 3],
+    linealpha = line_alpha,
+    color = my_blue,
+    label = "Relaxed",
+    fillcolor = my_blue,
+    fillrange = 0.0,
+    fillalpha = fill_alpha
+)
+
+annotate!((
+    -8,
+    0.9 * y_max,
+    Plots.text("(a)", :right, 18),
+))
+
+# savefig("PDOS_10x10_H.pdf")
+savefig("PDOS_10x10_C0_pz.pdf")
 # savefig("Test.pdf")

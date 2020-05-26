@@ -1,6 +1,8 @@
-include("../../../general.jl")
+include("../../general.jl")
+include("../../tight_binding.jl")
 
-DFT_Bands = readdlm("Data/DFT/bands/1H_relaxed/uc.h.bands")
+
+DFT_Bands = readdlm("Data/DFT/bands/1h_relaxed/uc.R-H.bands")
 
 e_shift_relaxed = -2.0;
 marker_alpha = 0.7;
@@ -73,14 +75,20 @@ for ii = 1:size(Energies)[1]
     scatter!(
         xCoord,
         Energies[ii, :],
-        markersize = 2 .+ 6 .* H_Proj[ii, :],
+        markersize = 1.5 .+ 3 .* H_Proj[ii, :],
         zcolor = H_Proj[ii, :],
         markercolor = :viridis,
         clims = (0, 1),
         legend = false,
         markerstrokewidth = 0,
-        markeralpha = 0.7,
+        markeralpha = 0.5,
     )
 end
+
+annotate!((
+    0.9 * (KΓ_L + ΓM_L + MK_L),
+    -18.5,
+    Plots.text("(b)", :right, 18),
+))
 
 savefig("TB_Relaxed.pdf")

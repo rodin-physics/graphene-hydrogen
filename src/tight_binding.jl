@@ -22,6 +22,10 @@ const t15 = 0.00018;            # Same lattice
 const t16 = -0.00237;           # Opposite lattice
 const t17 = -0.00008;           # Same lattice
 
+
+# Graphene single NN hopping parameter. NOTE: we set hopping to be equal to -t!
+const t = 2.8;
+
 function Hπ(q)
     # Phase terms
     f1 = 1 + exp(1im * sum(d1 .* q)) + exp(1im * sum(d2 .* q))

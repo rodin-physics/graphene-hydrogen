@@ -1,4 +1,3 @@
-using Cubature
 using DelimitedFiles
 using LaTeXStrings
 using LinearAlgebra
@@ -15,8 +14,8 @@ const K = [2 * pi / 3 / a, 2 * pi / sqrt(3) / a];
 const M = [0, 2 * pi / sqrt(3) / a];
 
 const ν = 1e-2;     # Small number for relative tolerance
-const α = 1e-4;     # Small number for absolute tolerance
-const η = 1e-3;     # Small number for moving the contour off the real axis
+const α = 1e-5;     # Small number for absolute tolerance
+const η = 1e-5;     # Small number for moving the contour off the real axis
 
 ## Colors for plotting
 my_yellow = RGB(255 / 255, 255 / 255, 153 / 255)
