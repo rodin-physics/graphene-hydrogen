@@ -62,12 +62,23 @@ plot(
     legendfontsize = 10,
 )
 
-for ii = 1:size(Energies)[1]
+plot!(
+    xCoord,
+    Energies[1, :],
+    linewidth = 2,
+    linecolor =  :black,
+    # linecolor = RGB(0.6, 0.6, 0.6),
+    linealpha = 1,
+    label = "TB",
+)
+
+for ii = 2:size(Energies)[1]
     plot!(
         xCoord,
         Energies[ii, :],
-        linewidth = 3,
-        linecolor = RGB(0.6, 0.6, 0.6),
+        linewidth = 2,
+        linecolor =  :black,
+        # linecolor = RGB(0.6, 0.6, 0.6),
         linealpha = 1,
         label = false,
     )
@@ -78,7 +89,7 @@ scatter!(
     DFT_Bands_P[:, 2] .- efermi_pristine,
     markersize = 2,
     markeralpha = marker_alpha,
-    markercolor = my_green,
+    markercolor = my_red,
     markerstrokewidth = 0,
     label = "Planar",
     markershape = :diamond,
@@ -95,10 +106,10 @@ scatter!(
     markershape = :circle,
 )
 
-annotate!((
-    0.9 * maximum(xCoord),
-    -18,
-    Plots.text("(e)", :right, 18),
-))
+# annotate!((
+#     0.9 * maximum(xCoord),
+#     -18,
+#     Plots.text("(e)", :right, 18),
+# ))
 # savefig("Test.pdf")
 savefig("UC_Bands_Comparison.pdf")

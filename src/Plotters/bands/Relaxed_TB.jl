@@ -88,7 +88,7 @@ end
 annotate!((
     0.9 * (KΓ_L + ΓM_L + MK_L),
     -18.5,
-    Plots.text("(b)", :right, 18),
+    Plots.text("(d)", :right, 18),
 ))
 
 savefig("TB_Relaxed.pdf")

@@ -56,3 +56,19 @@ PDOS_C3_p_U =
 ## Pristine
 PDOS_C_s_P = readdlm("Data/DFT/pdos/pristine/uc.P-Cs.pdos")
 PDOS_C_p_P = readdlm("Data/DFT/pdos/pristine/uc.P-Cp.pdos")
+
+
+## Spin Projected
+DOS_UC_SP_R = readdlm("Data/DFT/pdos/1h_relaxed_sp/uc/uc.SP.pdos")
+DOS_UC_nonSP_R = readdlm("Data/DFT/pdos/1h_relaxed_sp/uc/uc.nonSP.pdos")
+
+DOS_UC_SP_U = readdlm("Data/DFT/pdos/1h_unrelaxed_sp/uc/uc.SP.pdos")
+DOS_UC_nonSP_U = readdlm("Data/DFT/pdos/1h_unrelaxed_sp/uc/uc.nonSP.pdos")
+
+DOS_10x10_SP_R = readdlm("Data/DFT/pdos/1h_relaxed_sp/10x10/10x10.SP.pdos")
+DOS_10x10_nonSP_R =
+    readdlm("Data/DFT/pdos/1h_relaxed_sp/10x10/10x10.nonSP.pdos")
+
+DOS_10x10_SP_U = readdlm("Data/DFT/pdos/1h_unrelaxed_sp/10x10/10x10.SP.pdos")
+DOS_10x10_nonSP_U =
+    readdlm("Data/DFT/pdos/1h_unrelaxed_sp/10x10/10x10.nonSP.pdos")
