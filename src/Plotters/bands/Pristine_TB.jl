@@ -1,7 +1,7 @@
-include("../../../general.jl")
+include("../../../src/tight_binding.jl")
 
-DFT_Bands_P = readdlm("Data/DFT/bands/pristine/uc.c-s.bands")
-DFT_Bands_B = readdlm("Data/DFT/bands/buckled/uc.c-s.bands")
+# DFT_Bands_P = readdlm("Data/DFT/bands/pristine/uc.c-s.bands")
+# DFT_Bands_B = readdlm("Data/DFT/bands/buckled/uc.c-s.bands")
 
 e_shift_B = -1.9415
 e_shift_P = -1.7668
@@ -56,31 +56,31 @@ plot(
     ),
     xtickfont = font(12, "Serif"),
     ytickfont = font(12, "Serif"),
-    ylims = (minimum(vcat(DFT_Bands[:, 2])), 20),
+    # ylims = (minimum(vcat(DFT_Bands[:, 2])), 20),
     legend = :bottomleft,
 )
-
-scatter!(
-    DFT_Bands_P[:, 1] ./ maximum(DFT_Bands_P[:, 1]) .* (KΓ_L + ΓM_L + MK_L),
-    DFT_Bands_P[:, 2] .- e_shift_P,
-    markersize = 1.5,
-    markerstrokecolor = :white,
-    markeralpha = 1,
-    markerstrokewidth = 0,
-    color = RGB(0.65, 0.65, 0.65),
-    label = false,
-)
-
-scatter!(
-    DFT_Bands_B[:, 1] ./ maximum(DFT_Bands_B[:, 1]) .* (KΓ_L + ΓM_L + MK_L),
-    DFT_Bands_B[:, 2] .- e_shift_B,
-    markersize = 1.5,
-    markerstrokecolor = :white,
-    markeralpha = 1,
-    markerstrokewidth = 0,
-    color = RGB(0.65, 0, 0),
-    label = false,
-)
+#
+# scatter!(
+#     DFT_Bands_P[:, 1] ./ maximum(DFT_Bands_P[:, 1]) .* (KΓ_L + ΓM_L + MK_L),
+#     DFT_Bands_P[:, 2] .- e_shift_P,
+#     markersize = 1.5,
+#     markerstrokecolor = :white,
+#     markeralpha = 1,
+#     markerstrokewidth = 0,
+#     color = RGB(0.65, 0.65, 0.65),
+#     label = false,
+# )
+#
+# scatter!(
+#     DFT_Bands_B[:, 1] ./ maximum(DFT_Bands_B[:, 1]) .* (KΓ_L + ΓM_L + MK_L),
+#     DFT_Bands_B[:, 2] .- e_shift_B,
+#     markersize = 1.5,
+#     markerstrokecolor = :white,
+#     markeralpha = 1,
+#     markerstrokewidth = 0,
+#     color = RGB(0.65, 0, 0),
+#     label = false,
+# )
 
 for ii = 1:size(Energies)[1]
     plot!(

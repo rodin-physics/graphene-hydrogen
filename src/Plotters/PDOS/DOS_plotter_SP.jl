@@ -15,7 +15,7 @@ efermi_1h_uc_U = -0.7584
 
 line_alpha = 0.9;
 fill_alpha = 0.25;
-y_max = 5;
+y_max = maximum(DOS_10x10_nonSP_R[2:end, 2]);
 
 ## Plot setup
 pyplot()
@@ -32,8 +32,8 @@ plot(
 )
 
 plot!(
-    DOS_UC_SP_U[2:end, 1] .- efermi_1h_uc_U_SP,
-    DOS_UC_SP_U[2:end, 2],
+    DOS_10x10_SP_R[2:end, 1] .- efermi_1h_10x10_R_SP,
+    DOS_10x10_SP_R[2:end, 2],
     linealpha = line_alpha,
     color = my_green,
     label = "SP",
@@ -43,18 +43,43 @@ plot!(
 )
 
 plot!(
-    DOS_UC_nonSP_U[2:end, 1] .- efermi_1h_uc_U,
-    DOS_UC_nonSP_U[2:end, 2],
+    DOS_10x10_nonSP_R[2:end, 1] .- efermi_1h_10x10_R,
+    DOS_10x10_nonSP_R[2:end, 2],
     linealpha = line_alpha,
     color = my_blue,
     label = "non-SP",
     fillcolor = my_blue,
     fillrange = 0.0,
     fillalpha = fill_alpha,
+    # subplot = 2
 )
 
-annotate!((-8, 0.9 * y_max, Plots.text("(a)", :right, 18)))
+# plot!(
+#     inset = (1, bbox(0.0, 0.7, 0.3, 0.3)),
+#     # border = :semi,
+# )
+lens!(
+    [-1 / 2, 1 / 2],
+    [0, 20],
+    inset = (1, bbox(0.0, 0.7, 0.3, 0.3)),
+    # xticks = false,
+    yticks = false,
+    subplot = 2
+)
 
-savefig("DOS_UC_U.pdf")
+# plot!(
+#     DOS_10x10_nonSP_R[2:end, 1] .- efermi_1h_10x10_R,
+#     DOS_10x10_nonSP_R[2:end, 2],
+#     inset = (1, bbox(0.0, 0.7, 0.3, 0.3)),
+#     # xticks = false,
+#     yticks = false,
+#     subplot = 2,
+# )
+
+plot!(subplot = 2, xticks = false, framestyle = :semi)
+
+annotate!(subplot = 1, (-8, 0.9 * y_max, Plots.text("(b)", :right, 18)))
+
+savefig("DOS_10x10_R.pdf")
 # savefig("PDOS_10x10_C0_pz.pdf")
 # savefig("Test.pdf")
